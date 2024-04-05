@@ -17,4 +17,8 @@
     <ProjectReference Include="..\GotheTollway.Domain\GotheTollway.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>

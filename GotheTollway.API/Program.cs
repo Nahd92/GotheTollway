@@ -15,6 +15,9 @@ builder.Services.Configure<InfrastructureSettings>(builder.Configuration.GetSect
 //Database configuration. 
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
 
+//Dependency injections.
+builder.Services.ConfigureDependencyInjection();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
