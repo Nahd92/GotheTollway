@@ -11,15 +11,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{384F4D0E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A860C46C-B5DD-41A3-BE7C-7E84DCACE1A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotheTollway.API", "GotheTollway.API\GotheTollway.API.csproj", "{EDACC195-27D4-4759-BF65-592C3F49D4A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GotheTollway.API", "GotheTollway.API\GotheTollway.API.csproj", "{EDACC195-27D4-4759-BF65-592C3F49D4A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotheTollway.Domain", "GotheTollway.Domain\GotheTollway.Domain.csproj", "{50E7B498-ECEB-4DD4-9E0E-82A518D2D63D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GotheTollway.Domain", "GotheTollway.Domain\GotheTollway.Domain.csproj", "{50E7B498-ECEB-4DD4-9E0E-82A518D2D63D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotheTollway.Database", "GotheTollway.Database\GotheTollway.Database.csproj", "{9CF8B911-8B79-4ACA-AD3D-5A39D42BA97B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GotheTollway.Database", "GotheTollway.Database\GotheTollway.Database.csproj", "{9CF8B911-8B79-4ACA-AD3D-5A39D42BA97B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotheTollway.Contract", "GotheTollway.Contract\GotheTollway.Contract.csproj", "{F60212EA-B963-4059-BA5B-05F7B74B2E8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GotheTollway.Contract", "GotheTollway.Contract\GotheTollway.Contract.csproj", "{F60212EA-B963-4059-BA5B-05F7B74B2E8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotheTollway.Domain.Tests", "GotheTollway.Domain.Tests\GotheTollway.Domain.Tests.csproj", "{C8D4BC0A-3D2D-4D0C-AF8B-DA1083B84060}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GotheTollway.Domain.Tests", "GotheTollway.Domain.Tests\GotheTollway.Domain.Tests.csproj", "{C8D4BC0A-3D2D-4D0C-AF8B-DA1083B84060}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
