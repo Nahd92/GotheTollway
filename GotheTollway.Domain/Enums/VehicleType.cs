@@ -3,6 +3,7 @@
     public enum VehicleType
     {
         Unknown,
+        Car,
         Motorbike,
         Tractor,
         Emergency,

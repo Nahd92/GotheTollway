@@ -1,5 +1,6 @@
 using GotheTollway.Domain.Configuration;
 using GotheTollway.Database.ServiceCollectionExtension;
+using GotheTollway.Infrastructure.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,9 @@ builder.Services.Configure<InfrastructureSettings>(builder.Configuration.GetSect
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
 
 //Dependency injections.
-builder.Services.ConfigureDependencyInjection();
+builder.Services.ConfigureServiceDependencyInjection();
+builder.Services.ConfigureRepositoryDependencyInjection();
+builder.Services.ConfigureInfrastructureServices();
 
 var app = builder.Build();
 

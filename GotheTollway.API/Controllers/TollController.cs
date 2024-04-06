@@ -5,13 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GotheTollway.API.Controllers
 {
-    public class TollController : ControllerBase
+    public class TollController(ITollService tollService) : ControllerBase
     {
-        private ITollService _tollService;
-        public TollController(ITollService tollService)
-        {
-            _tollService = tollService;
-        }
+        private ITollService _tollService = tollService;
 
         [HttpPost]
         [Route("api/toll/process")]

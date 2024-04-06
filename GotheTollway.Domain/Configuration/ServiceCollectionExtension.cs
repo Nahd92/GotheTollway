@@ -6,7 +6,7 @@ namespace GotheTollway.Domain.Configuration
 {
     public static class ServiceCollectionExtension
     {
-        public static void ConfigureDependencyInjection(this IServiceCollection services)
+        public static void ConfigureServiceDependencyInjection(this IServiceCollection services)
         {
             services.AddScoped<ITollService, TollService>();
         }

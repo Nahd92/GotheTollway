@@ -6,9 +6,13 @@ namespace GotheTollway.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
+
+        // Optional name of the exemption.
+        public string? Description { get; set; }
         public bool IsActive { get; set; } 
         public DayOfWeek? ExemptedDayOfWeek { get; set; } 
         public DateTimeOffset? ExemptionStartDate { get; set; }
-        public DateTimeOffset? ExemptionEndDate { get; set; } 
+        public DateTimeOffset? ExemptionEndDate { get; set; }
+        public TollFee TollFee { get; set; } = new();
     }
 }

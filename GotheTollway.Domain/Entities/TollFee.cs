@@ -11,5 +11,6 @@ namespace GotheTollway.Domain.Entities
         public DateTimeOffset EndTime { get; set; }
         public decimal Fee { get; set; }
         public List<VehicleType> ExemptedVehicleTypes { get; set; } = [];
+        public List<TollPassage> TollPassages { get; set; } = [];
     }
 }

@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GotheTollway.Contract\GotheTollway.Contract.csproj" />
     <ProjectReference Include="..\GotheTollway.Database\GotheTollway.Database.csproj" />
+    <ProjectReference Include="..\GotheTollway.Infrastructure\GotheTollway.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

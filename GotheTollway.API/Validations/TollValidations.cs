@@ -23,6 +23,7 @@ namespace GotheTollway.API.Validations
                 return new CommandResult(Result.Failure("Time cannot be in the past."));
             }
             
+            
             return new CommandResult(Result.Success());
         }
     }
