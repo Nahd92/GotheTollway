@@ -24,8 +24,10 @@ namespace GotheTollway.Database.ServiceCollectionExtension
 
         public static void ConfigureRepositoryDependencyInjection(this IServiceCollection services)
         {
-            services.AddScoped<ITollRepository, TollRepository>();
+            services.AddScoped<ITollPassageRepository, TollRepository>();
             services.AddScoped<IVehicleRepository,  VehicleRepository>();
+            services.AddScoped<ITollExemptionRepository, TollExemptionRepository>();
+            services.AddScoped<ITollFeeRepository, TollFeeRepository>();
         }
     }
 }

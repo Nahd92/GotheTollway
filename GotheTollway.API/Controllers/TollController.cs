@@ -7,7 +7,7 @@ namespace GotheTollway.API.Controllers
 {
     public class TollController(ITollService tollService) : ControllerBase
     {
-        private ITollService _tollService = tollService;
+        private readonly ITollService _tollService = tollService;
 
         [HttpPost]
         [Route("api/toll/process")]

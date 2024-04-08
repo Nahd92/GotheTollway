@@ -7,10 +7,9 @@ namespace GotheTollway.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
-        public DateTimeOffset StartTime { get; set; }
-        public DateTimeOffset EndTime { get; set; }
+        public bool IsActive { get; set; }
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
         public decimal Fee { get; set; }
-        public List<VehicleType> ExemptedVehicleTypes { get; set; } = [];
-        public List<TollPassage> TollPassages { get; set; } = [];
     }
 }

@@ -10,5 +10,7 @@ namespace GotheTollway.Domain.Entities
         public string RegistrationNumber { get; set; } = string.Empty;
         public VehicleType VehicleType { get; set; }
         public VehicleOwner Owner { get; set; } = new();
+
+        public List<TollPassage> TollPassages { get; set; } = new();
     }
 }

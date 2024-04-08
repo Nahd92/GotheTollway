@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GotheTollway.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace GotheTollway.Domain.Entities
 {
@@ -6,13 +7,12 @@ namespace GotheTollway.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
-
         // Optional name of the exemption.
         public string? Description { get; set; }
         public bool IsActive { get; set; } 
         public DayOfWeek? ExemptedDayOfWeek { get; set; } 
-        public DateTimeOffset? ExemptionStartDate { get; set; }
-        public DateTimeOffset? ExemptionEndDate { get; set; }
-        public TollFee TollFee { get; set; } = new();
+        public TimeSpan? ExemptionStartTime { get; set; }
+        public TimeSpan? ExemptionEndTime { get; set; }
+        public List<VehicleType> ExemptedVehicleTypes { get; set; } = new();
     }
 }

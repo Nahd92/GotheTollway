@@ -56,7 +56,8 @@ namespace GotheTollway.Infrastructure.Services
                             RegistrationNumber = "ABC123",
                             VehicleOwnerResponse = new VehicleOwnerResponse
                             {
-                                Name = "John Doe",
+                                FirstName = "John",
+                                LastName = "Doe",
                                 Address = "1234 Main St, Springfield, IL"
                             },
                             VehicleType = VehicleType.Car

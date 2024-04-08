@@ -6,8 +6,9 @@ namespace GotheTollway.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
-        public DateTime Date { get; set; }
+        public DateTimeOffset Date { get; set; }
         public Vehicle Vehicle { get; set; } = new();
-        public TollFee TollFee { get; set; } = new();
+
+        public decimal Fee { get; set; }
     }
 }

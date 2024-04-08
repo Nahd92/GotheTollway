@@ -5,25 +5,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GotheTollway.Database.Repositories
 {
-    public class TollRepository(GotheTollWayContext context) : RepositoryBase(context), ITollRepository
+    public class TollRepository(GotheTollWayContext context) : RepositoryBase(context), ITollPassageRepository
     {
-        public async Task<List<TollPassage?>> GetAllTollPassagesByRegistrationNumber(string registrationNumber)
+        public async Task<List<TollPassage>> GetAllTollPassagesByRegistrationNumber(string registrationNumber)
         {
             return await _context.TollPassages
-                                    .Include(x => x.TollFee).Where(x => x.Vehicle.RegistrationNumber == registrationNumber).ToListAsync();
+                                        .Where(x => x.Vehicle.RegistrationNumber == registrationNumber)
+                                            .ToListAsync();
         }
 
         public async Task<TollPassage?> GetTollPassageByRegistrationNumber(string registrationNumber)
         {
             return await _context
                             .TollPassages
-                                .Include(x => x.TollFee)
                                 .SingleOrDefaultAsync(x => x.Vehicle.RegistrationNumber == registrationNumber);
         }
 
-        public Task<TollPassage> HandleTollPassage(TollPassage tollPassage)
+        public async Task<TollPassage> CreateTollPassage(TollPassage tollPassage)
         {
-            throw new NotImplementedException();
+            var createdTollPassage = _context.TollPassages.Add(tollPassage).Entity;
+            await _context.SaveChangesAsync();
+            return createdTollPassage;
         }
     }
 }
