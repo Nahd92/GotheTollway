@@ -9,6 +9,7 @@ namespace GotheTollway.Domain.Configuration
         public static void ConfigureServiceDependencyInjection(this IServiceCollection services)
         {
             services.AddScoped<ITollService, TollService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
         }
     }
 }

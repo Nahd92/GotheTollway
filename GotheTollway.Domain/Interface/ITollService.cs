@@ -1,4 +1,5 @@
 ﻿using GotheTollway.Contract.Requests;
+using GotheTollway.Contract.Responses;
 using GotheTollway.Domain.Helpers;
 
 namespace GotheTollway.Domain.Interface
