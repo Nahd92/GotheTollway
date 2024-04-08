@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GotheTollway.Database.Migrations
 {
     [DbContext(typeof(GotheTollWayContext))]
-    [Migration("20240407103457_Changed some structure and properties in the entities")]
-    partial class Changedsomestructureandpropertiesintheentities
+    [Migration("20240408140120_init migration")]
+    partial class initmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,22 @@ namespace GotheTollway.Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("GotheTollway.Domain.Entities.ExemptedVehicleType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("VehicleType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExemptedVehicleTypes");
+                });
 
             modelBuilder.Entity("GotheTollway.Domain.Entities.TollExemption", b =>
                 {
@@ -39,12 +55,14 @@ namespace GotheTollway.Database.Migrations
                     b.Property<int?>("ExemptedDayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<string>("ExemptedVehicleTypes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("ExemptionEndPeriod")
+                        .HasColumnType("datetime2");
 
                     b.Property<TimeSpan?>("ExemptionEndTime")
                         .HasColumnType("time");
+
+                    b.Property<DateTime?>("ExemptionStartPeriod")
+                        .HasColumnType("datetime2");
 
                     b.Property<TimeSpan?>("ExemptionStartTime")
                         .HasColumnType("time");

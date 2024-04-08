@@ -28,6 +28,7 @@ namespace GotheTollway.Database.ServiceCollectionExtension
             services.AddScoped<IVehicleRepository,  VehicleRepository>();
             services.AddScoped<ITollExemptionRepository, TollExemptionRepository>();
             services.AddScoped<ITollFeeRepository, TollFeeRepository>();
+            services.AddScoped<IExemptionVehicleTypeRepository, ExemptionVehicleTypeService>();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using GotheTollway.Contract.Requests;
 using GotheTollway.Domain.Entities;
+using GotheTollway.Domain.Enums;
 using GotheTollway.Domain.Helpers;
 using GotheTollway.Domain.Interface;
 using GotheTollway.Domain.Repositories;
@@ -11,18 +12,22 @@ namespace GotheTollway.Domain.Services
                              IVehicleAPIService vehicleAPIService,
                              IVehicleRepository vehicleRepository,
                              ITollExemptionRepository tollExemptionRepository,
-                             ITollFeeRepository tollFeeRepository) : ITollService
+                             ITollFeeRepository tollFeeRepository,
+                             IExemptionVehicleTypeRepository exemptionVehicleType) : ITollService
     {
         private readonly ITollPassageRepository _tollRepository = tollRepository;
         private readonly IVehicleAPIService _vehicleAPIService = vehicleAPIService;
         private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
         private readonly ITollExemptionRepository _tollExemptionRepository = tollExemptionRepository;
         private readonly ITollFeeRepository _tollFeeRepository = tollFeeRepository;
+        private readonly IExemptionVehicleTypeRepository _exemptionVehicleType = exemptionVehicleType;
 
         public async Task<CommandResult> ProcessToll(ProcessTollRequest processTollRequest)
         {
+            var allExistingVehicleTypes = await _exemptionVehicleType.GetAllExemptedVehicleTypesAsync();
+
             // 1. Get the vehicle data from database if exists else external API
-            var vehicle = await HandleVehicleData(processTollRequest);
+            var vehicle = await HandleVehicleData(processTollRequest, allExistingVehicleTypes);
 
             if (vehicle == null)
             {
@@ -36,7 +41,7 @@ namespace GotheTollway.Domain.Services
             var tollFeesExemptions = await _tollExemptionRepository.GetTollExemptions();
 
             // 4. Check if the vehicle is exempted from toll fee
-            var vehicleExempted = await CheckExemptedVehicleTollFee(tollFeesExemptions, vehicle, processTollRequest);
+            var vehicleExempted = await CheckExemptedVehicleTollFee(tollFeesExemptions, vehicle, processTollRequest,allExistingVehicleTypes);
 
             if (vehicleExempted.Result.IsSuccess)
             {
@@ -50,12 +55,12 @@ namespace GotheTollway.Domain.Services
                     .FirstOrDefault();
 
             // Check if the vehicle has passed the toll within the last hour
-            if (lastPassage != null && processTollRequest.Time <= lastPassage.Date.AddHours(1))
+            if (lastPassage != null && processTollRequest.Date <= lastPassage.Date.AddHours(1))
             {
                     await _tollRepository.CreateTollPassage(new TollPassage
                     {
                         Fee = 0,
-                        Date = processTollRequest.Time,
+                        Date = processTollRequest.Date,
                         Vehicle = vehicle,
                     });
 
@@ -67,15 +72,14 @@ namespace GotheTollway.Domain.Services
 
             return new CommandResult(Result.Success());
         }
-
         private async Task GetAndAppendFeeToTollPassage(ProcessTollRequest processTollRequest, Vehicle vehicle)
         {
             var allFeeConfigs = await _tollFeeRepository.GetAllTollFeesConfigs();
 
             var fee = allFeeConfigs
                             .FirstOrDefault(x =>
-                                    x.StartTime <= processTollRequest.Time.TimeOfDay &&
-                                    x.EndTime >= processTollRequest.Time.TimeOfDay);
+                                    x.StartTime <= processTollRequest.Date.TimeOfDay &&
+                                    x.EndTime >= processTollRequest.Date.TimeOfDay);
 
             if (fee == null)
             {
@@ -84,7 +88,7 @@ namespace GotheTollway.Domain.Services
 
             await _tollRepository.CreateTollPassage(new TollPassage
             {
-                Date = processTollRequest.Time,
+                Date = processTollRequest.Date,
                 Vehicle = vehicle,
                 Fee = fee.Fee
             });
@@ -97,19 +101,39 @@ namespace GotheTollway.Domain.Services
         /// </summary>
         /// <param name="exemptions"></param>
         /// <param name="vehicle"></param>
-        private async Task<CommandResult> CheckExemptedVehicleTollFee(List<TollExemption> exemptions, Vehicle vehicle, ProcessTollRequest processTollRequest)
+        private async Task<CommandResult> CheckExemptedVehicleTollFee(List<TollExemption> exemptions,
+                                                                      Vehicle vehicle,
+                                                                      ProcessTollRequest processTollRequest,
+                                                                      List<ExemptedVehicleType> exemptedVehicleTypes)
         {
             if(exemptions != null)
             {
-                if (exemptions.Any(x => x.ExemptedVehicleTypes.Contains(vehicle.VehicleType)))
+                if (exemptedVehicleTypes.Any(x => x.VehicleType.Equals(vehicle.VehicleType)))
                 {
-                    var exemptedTollFee = exemptions.FirstOrDefault(x => x.ExemptedVehicleTypes.Contains(vehicle.VehicleType));
+                    var exemptedTollFee = exemptedVehicleTypes.FirstOrDefault(x => x.VehicleType.Equals(vehicle.VehicleType));
 
                     if (exemptedTollFee != null)
                     {
                         await _tollRepository.CreateTollPassage(new TollPassage
                         {
-                            Date = processTollRequest.Time,
+                            Date = processTollRequest.Date,
+                            Vehicle = vehicle,
+                            Fee = 0
+                        });
+
+                        return new CommandResult(Result.Success());
+                    }
+                }
+
+                //Check if the time falls wihtin exemption period range
+
+                if (exemptions.Any(e => e.ExemptionStartPeriod.HasValue && e.ExemptionEndPeriod.HasValue))
+                {
+                    if (exemptions.Any(e => processTollRequest.Date >= e.ExemptionStartPeriod && processTollRequest.Date <= e.ExemptionEndPeriod))
+                    {
+                        await _tollRepository.CreateTollPassage(new TollPassage
+                        {
+                            Date = processTollRequest.Date,
                             Vehicle = vehicle,
                             Fee = 0
                         });
@@ -123,12 +147,12 @@ namespace GotheTollway.Domain.Services
                 {
                     foreach (var exemption in exemptions)
                     {
-                        var timeOfDay = processTollRequest.Time.TimeOfDay;
+                        var timeOfDay = processTollRequest.Date.TimeOfDay;
                         if (timeOfDay >= exemption.ExemptionStartTime && timeOfDay < exemption.ExemptionEndTime)
                         {
                             await _tollRepository.CreateTollPassage(new TollPassage
                             {
-                                Date = processTollRequest.Time,
+                                Date = processTollRequest.Date,
                                 Vehicle = vehicle,
                                 Fee = 0
                             });
@@ -139,15 +163,15 @@ namespace GotheTollway.Domain.Services
                 }
 
                 // Check if the vehicle is exempted from toll fee based on the day of the week
-                if (exemptions != null && exemptions.Any(x => x.ExemptedDayOfWeek == processTollRequest.Time.DayOfWeek))
+                if (exemptions != null && exemptions.Any(x => x.ExemptedDayOfWeek == processTollRequest.Date.DayOfWeek))
                 {
-                    var exemptedTollFee = exemptions.FirstOrDefault(x => x.ExemptedDayOfWeek == processTollRequest.Time.DayOfWeek);
+                    var exemptedTollFee = exemptions.FirstOrDefault(x => x.ExemptedDayOfWeek == processTollRequest.Date.DayOfWeek);
 
                     if (exemptedTollFee != null)
                     {
                         await _tollRepository.CreateTollPassage(new TollPassage
                         {
-                            Date = processTollRequest.Time,
+                            Date = processTollRequest.Date,
                             Vehicle = vehicle,
                             Fee = 0
                         });
@@ -160,7 +184,7 @@ namespace GotheTollway.Domain.Services
             return new CommandResult(Result.Failure("process doesn't fall within any exemptions"));
         }
 
-        private async Task<Vehicle?> HandleVehicleData(ProcessTollRequest processTollRequest)
+        private async Task<Vehicle?> HandleVehicleData(ProcessTollRequest processTollRequest, List<ExemptedVehicleType> exemptedVehicleTypes)
         {
             var vehicleEntity = await _vehicleRepository.GetVehicleByRegistrationNumber(processTollRequest.RegistrationNumber);
 
@@ -175,10 +199,12 @@ namespace GotheTollway.Domain.Services
                     return null;
                 }
 
+                var vehicleType = exemptedVehicleTypes.FirstOrDefault(x => x.VehicleType == vehicleData.VehicleType);
+
                 var createVehicle = new Vehicle
                 {
                     RegistrationNumber = vehicleData.RegistrationNumber,
-                    VehicleType = vehicleData.VehicleType,
+                    VehicleType = vehicleType?.VehicleType ?? VehicleType.Unknown,
                     Owner = new VehicleOwner
                     {
                         FirstName = vehicleData.VehicleOwnerResponse.FirstName,

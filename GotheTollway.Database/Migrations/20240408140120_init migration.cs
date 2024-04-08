@@ -6,21 +6,37 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GotheTollway.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class initmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ExemptedVehicleTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VehicleType = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExemptedVehicleTypes", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "TollExemptions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ExemptionStartPeriod = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ExemptionEndPeriod = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ExemptedDayOfWeek = table.Column<int>(type: "int", nullable: true),
-                    ExemptionStartDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ExemptionEndDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                    ExemptionStartTime = table.Column<TimeSpan>(type: "time", nullable: true),
+                    ExemptionEndTime = table.Column<TimeSpan>(type: "time", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -33,10 +49,10 @@ namespace GotheTollway.Database.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StartTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    EndTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    Fee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ExemptedVehicleTypes = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    Fee = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,8 +102,9 @@ namespace GotheTollway.Database.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VehicleId = table.Column<int>(type: "int", nullable: false)
+                    Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    VehicleId = table.Column<int>(type: "int", nullable: false),
+                    Fee = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,6 +131,9 @@ namespace GotheTollway.Database.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ExemptedVehicleTypes");
+
             migrationBuilder.DropTable(
                 name: "TollExemptions");
 

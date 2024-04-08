@@ -10,5 +10,6 @@ namespace GotheToll.Database.Context
         public DbSet<TollPassage> TollPassages { get; set; }
         public DbSet<TollFee> TollFee { get; set; }
         public DbSet<TollExemption> TollExemptions { get; set; }
+        public DbSet<ExemptedVehicleType> ExemptedVehicleTypes { get; set; }
     }
 }

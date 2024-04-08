@@ -7,10 +7,6 @@ using GotheTollway.Domain.Models.VehicleAPI;
 using GotheTollway.Domain.Repositories;
 using GotheTollway.Domain.Services;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace GotheTollway.Domain.Tests.Services
 {
@@ -21,6 +17,7 @@ namespace GotheTollway.Domain.Tests.Services
         private readonly Mock<IVehicleRepository> _vehicleRepository;
         private readonly Mock<ITollExemptionRepository> _tollExemptionRepository;
         private readonly Mock<ITollFeeRepository> _tollFeeRepository;
+        private readonly Mock<IExemptionVehicleTypeRepository> _exemptionVehicleTypesRepo;
 
         private readonly TollService _tollService;
 
@@ -31,20 +28,21 @@ namespace GotheTollway.Domain.Tests.Services
             _vehicleRepository = new Mock<IVehicleRepository>();
             _tollExemptionRepository = new Mock<ITollExemptionRepository>();
             _tollFeeRepository = new Mock<ITollFeeRepository>();
+            _exemptionVehicleTypesRepo = new Mock<IExemptionVehicleTypeRepository>();
 
             _tollService = new TollService(
                 _tollPassageRepository.Object,
                 _vehicleAPIService.Object,
                 _vehicleRepository.Object,
                 _tollExemptionRepository.Object,
-                _tollFeeRepository.Object
-            );
+                _tollFeeRepository.Object,
+                _exemptionVehicleTypesRepo.Object);
         }
 
         private readonly ProcessTollRequest request = new()
         {
             RegistrationNumber = "ABC123",
-            Time = new DateTime(2024, 4, 7, 6, 15, 0)
+            Date = new DateTime(2024, 4, 7, 6, 15, 0)
         };
 
         private void SetupDefaultMock()
@@ -53,7 +51,7 @@ namespace GotheTollway.Domain.Tests.Services
               .ReturnsAsync(new Vehicle
               {
                   RegistrationNumber = request.RegistrationNumber,
-                  VehicleType = VehicleType.Car
+                  VehicleType = VehicleType.Military
               });
 
             _tollPassageRepository.Setup(x => x.GetAllTollPassagesByRegistrationNumber(request.RegistrationNumber))
@@ -83,6 +81,9 @@ namespace GotheTollway.Domain.Tests.Services
                             Fee = 10
                         }
                     ]);
+
+            _exemptionVehicleTypesRepo.Setup(x => x.GetAllExemptedVehicleTypesAsync())
+                .ReturnsAsync([]);
         }
 
         [Fact]
@@ -97,13 +98,13 @@ namespace GotheTollway.Domain.Tests.Services
                     VehicleType = VehicleType.Military
                 });
 
-            _tollExemptionRepository.Setup(x => x.GetTollExemptions())
-                .ReturnsAsync(new List<TollExemption>
-                {
+            _exemptionVehicleTypesRepo.Setup(x => x.GetAllExemptedVehicleTypesAsync())
+                .ReturnsAsync(
+                [
                     new() {
-                        ExemptedVehicleTypes = [VehicleType.Military]
+                       VehicleType = VehicleType.Military
                     }
-                });
+                ]);
 
             // Act
             var result = await _tollService.ProcessToll(request);
@@ -148,7 +149,7 @@ namespace GotheTollway.Domain.Tests.Services
             var request = new ProcessTollRequest
             {
                 RegistrationNumber = "ABC123",
-                Time = new DateTime(2024, 4, 1, 20, 00, 0)
+                Date = new DateTime(2024, 4, 1, 20, 00, 0)
             };
 
             _tollExemptionRepository.Setup(x => x.GetTollExemptions())

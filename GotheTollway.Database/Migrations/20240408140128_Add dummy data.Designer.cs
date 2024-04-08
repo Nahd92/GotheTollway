@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GotheTollway.Database.Migrations
 {
     [DbContext(typeof(GotheTollWayContext))]
-    [Migration("20240405204442_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20240408140128_Add dummy data")]
+    partial class Adddummydata
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,22 @@ namespace GotheTollway.Database.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GotheTollway.Domain.Entities.ExemptedVehicleType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("VehicleType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExemptedVehicleTypes");
+                });
+
             modelBuilder.Entity("GotheTollway.Domain.Entities.TollExemption", b =>
                 {
                     b.Property<int>("Id")
@@ -33,14 +49,23 @@ namespace GotheTollway.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("ExemptedDayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset?>("ExemptionEndDate")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("ExemptionEndPeriod")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTimeOffset?>("ExemptionStartDate")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<TimeSpan?>("ExemptionEndTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime?>("ExemptionStartPeriod")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan?>("ExemptionStartTime")
+                        .HasColumnType("time");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -58,18 +83,17 @@ namespace GotheTollway.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset>("EndTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("ExemptedVehicleTypes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
 
                     b.Property<decimal>("Fee")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTimeOffset>("StartTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
 
                     b.HasKey("Id");
 
@@ -84,8 +108,11 @@ namespace GotheTollway.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("Fee")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
@@ -154,7 +181,7 @@ namespace GotheTollway.Database.Migrations
             modelBuilder.Entity("GotheTollway.Domain.Entities.TollPassage", b =>
                 {
                     b.HasOne("GotheTollway.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany()
+                        .WithMany("TollPassages")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -171,6 +198,11 @@ namespace GotheTollway.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("GotheTollway.Domain.Entities.Vehicle", b =>
+                {
+                    b.Navigation("TollPassages");
                 });
 
             modelBuilder.Entity("GotheTollway.Domain.Entities.VehicleOwner", b =>

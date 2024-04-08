@@ -1,6 +1,4 @@
-﻿using GotheTollway.Contract.Enums;
-
-namespace GotheTollway.Contract.Responses
+﻿namespace GotheTollway.Contract.Responses
 {
     public class InvoiceResponse
     {
@@ -13,7 +11,7 @@ namespace GotheTollway.Contract.Responses
     public class VehicleResponse
     {
         public string RegistrationNumber { get; set; } = string.Empty;
-        public string VehicleType { get; set; }
+        public string VehicleType { get; set; } = string.Empty;
     }
     
     public class VehicleOwnerResponse

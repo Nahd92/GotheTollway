@@ -18,7 +18,7 @@ namespace GotheTollway.API.Validations
                 return new CommandResult(Result.Failure("Registration number cannot be null or empty."));
             }
 
-            if (processTollRequest.Time < DateTime.UtcNow)
+            if (processTollRequest.Date < DateTime.UtcNow)
             {
                 return new CommandResult(Result.Failure("Time cannot be in the past."));
             }

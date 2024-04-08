@@ -22,6 +22,22 @@ namespace GotheTollway.Database.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GotheTollway.Domain.Entities.ExemptedVehicleType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("VehicleType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExemptedVehicleTypes");
+                });
+
             modelBuilder.Entity("GotheTollway.Domain.Entities.TollExemption", b =>
                 {
                     b.Property<int>("Id")
@@ -36,12 +52,14 @@ namespace GotheTollway.Database.Migrations
                     b.Property<int?>("ExemptedDayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<string>("ExemptedVehicleTypes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("ExemptionEndPeriod")
+                        .HasColumnType("datetime2");
 
                     b.Property<TimeSpan?>("ExemptionEndTime")
                         .HasColumnType("time");
+
+                    b.Property<DateTime?>("ExemptionStartPeriod")
+                        .HasColumnType("datetime2");
 
                     b.Property<TimeSpan?>("ExemptionStartTime")
                         .HasColumnType("time");

@@ -2,13 +2,13 @@
 {
     public enum VehicleType
     {
-        Unknown,
-        Car,
-        Motorbike,
-        Tractor,
-        Emergency,
-        Diplomat,
-        Foreign,
-        Military,
+        Unknown = 0,
+        Car = 1,
+        Motorbike = 2,
+        Tractor = 3,
+        Emergency = 4,
+        Diplomat = 5 ,
+        Foreign = 6,
+        Military = 7,
     }
 }

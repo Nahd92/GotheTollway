@@ -8,6 +8,7 @@ public class TollExemptionRepository(GotheTollWayContext context) : RepositoryBa
 {
     public async Task<List<TollExemption>> GetTollExemptions()
     {
-        return await _context.TollExemptions.ToListAsync();
+        return await _context.TollExemptions
+                            .ToListAsync();
     }
 }

@@ -2,7 +2,7 @@
 {
     public class ProcessTollRequest
     {
-        public DateTimeOffset Time { get; set; }
+        public DateTimeOffset Date { get; set; }
         public string RegistrationNumber { get;     set; } = string.Empty;
     }
 }
