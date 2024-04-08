@@ -8,8 +8,27 @@ Congestion tax is collected for vehicles passing through a toll station Monday t
 
 # Documentation 
 
-Coming ...
+The idea of the application is that it should be a simple API that has two ways of communication:
 
+ 1. Create a Tollpassage, regardless if there's a fee or not. This request and logic should only care to create the Tollpassage. 
+ 2. Create an Invoice. This is a GET method with its only purpose to get a specific car's all passages and total sum of fees.
+
+Codewise, I have used the repository pattern and Entity Framework to create an easy way to store and retrieve data based on the different exemptions.
+
+Structure 
+- API: The API that's exposed to the "public".
+- Domain: Holds all entities, interfaces, business logic, and some helper classes.
+- Contract: Holds all the models that are used for the API to isolate the domain entities and not expose them.
+- Infrastructure: Holds the needed logic to request other services (internally and externally if needed).
+
+I have also tried to cover as much code with tests as possible. (There are some tests left to do).
+
+# What's left to do:
+Write more tests.
+Finalize the logic so that it fulfills all the requirements. (A few things left).
+Prepare for tomorrow's demonstration.
+
+--------------------------------------------
 
 # Recent Updates
 - Fixed Logic for Retrieving Last Passage: Corrected the logic to retrieve the last passage within the last hour.
