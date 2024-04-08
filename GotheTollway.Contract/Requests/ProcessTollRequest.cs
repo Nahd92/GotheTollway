@@ -3,7 +3,6 @@
     public class ProcessTollRequest
     {
         public DateTimeOffset Time { get; set; }
-        public string? Description { get; set; }
-        public string RegistrationNumber { get; set; } = string.Empty;
+        public string RegistrationNumber { get;     set; } = string.Empty;
     }
 }

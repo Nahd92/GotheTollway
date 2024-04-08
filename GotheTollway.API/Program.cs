@@ -11,7 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Configuration settings.
-builder.Services.Configure<InfrastructureSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+builder.Services.Configure<InfrastructureSettings>(builder.Configuration.GetSection("InfrastructureSettings"));
 
 //Database configuration. 
 builder.Services.AddDatabaseConfiguration(builder.Configuration);

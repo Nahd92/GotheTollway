@@ -43,18 +43,23 @@ namespace GotheTollway.Domain.Services
                 return vehicleExempted;
             }
 
-            // 5. Get the most recent toll passage for the vehicle
-            var lastPassage = tollPassages.OrderByDescending(x => x.Date).FirstOrDefault();
-            if (lastPassage != null && lastPassage.Date >= DateTime.UtcNow.AddHours(-1))
-            {
-                await _tollRepository.CreateTollPassage(new TollPassage
-                {
-                    Fee = 0,
-                    Date = processTollRequest.Time,
-                    Vehicle = vehicle,
-                });
+            // Get the last passage within the last hour
+            var lastPassage = tollPassages
+                    .Where(x => x.Date > DateTime.UtcNow.AddHours(-1))
+                    .OrderBy(x => x.Date) 
+                    .FirstOrDefault();
 
-                return new CommandResult(Result.Success());
+            // Check if the vehicle has passed the toll within the last hour
+            if (lastPassage != null && processTollRequest.Time <= lastPassage.Date.AddHours(1))
+            {
+                    await _tollRepository.CreateTollPassage(new TollPassage
+                    {
+                        Fee = 0,
+                        Date = processTollRequest.Time,
+                        Vehicle = vehicle,
+                    });
+
+                    return new CommandResult(Result.Success());
             }
 
             // 6. Get the fee for the toll passage
@@ -79,7 +84,7 @@ namespace GotheTollway.Domain.Services
 
             await _tollRepository.CreateTollPassage(new TollPassage
             {
-                Date = DateTime.UtcNow,
+                Date = processTollRequest.Time,
                 Vehicle = vehicle,
                 Fee = fee.Fee
             });
@@ -104,7 +109,7 @@ namespace GotheTollway.Domain.Services
                     {
                         await _tollRepository.CreateTollPassage(new TollPassage
                         {
-                            Date = DateTime.UtcNow,
+                            Date = processTollRequest.Time,
                             Vehicle = vehicle,
                             Fee = 0
                         });
@@ -123,7 +128,7 @@ namespace GotheTollway.Domain.Services
                         {
                             await _tollRepository.CreateTollPassage(new TollPassage
                             {
-                                Date = DateTime.UtcNow,
+                                Date = processTollRequest.Time,
                                 Vehicle = vehicle,
                                 Fee = 0
                             });
@@ -142,7 +147,7 @@ namespace GotheTollway.Domain.Services
                     {
                         await _tollRepository.CreateTollPassage(new TollPassage
                         {
-                            Date = DateTime.UtcNow,
+                            Date = processTollRequest.Time,
                             Vehicle = vehicle,
                             Fee = 0
                         });
