@@ -24,9 +24,9 @@ Structure
 I have also tried to cover as much code with tests as possible. (There are some tests left to do).
 
 # What's left to do:
-Write more tests.
-Finalize the logic so that it fulfills all the requirements. (A few things left).
-Prepare for tomorrow's demonstration.
+- Write more tests.
+- Finalize the logic so that it fulfills all the requirements. (A few things left).
+- Prepare for tomorrow's demonstration.
 
 --------------------------------------------
 
