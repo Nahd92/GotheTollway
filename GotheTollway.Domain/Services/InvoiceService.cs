@@ -39,28 +39,22 @@ namespace GotheTollway.Domain.Services
                     ZipCode = passageInfo.Vehicle.Owner.ZipCode,
                     Address = passageInfo.Vehicle.Owner.Address,
                 },
-                PassagesPerDay = GetPassagesPerDay(passages)
+                Passages = GetPassagesGroupedByDay(passages)
             });
         }
-
-        private static TollPassageBaseResponse GetPassagesPerDay(List<TollPassage> passages)
+        private static TollPassageBaseResponse GetPassagesGroupedByDay(List<TollPassage> passages)
         {
-            var passagesPerDay = passages.GroupBy(p => p.Date.Date)
-                            .SelectMany(group => group.Select(p => new TollPassagesResponse
-                            {
-                                Date = group.Key,
-                                Fee = p.Fee
-                            }).ToList());
-
-            var totalSum = passagesPerDay.Sum(p => p.Fee);
-
-            var tollPassageBaseResponse = new TollPassageBaseResponse
+            return new TollPassageBaseResponse
             {
-                TotalSum = totalSum,
-                PassagesPerDay = passagesPerDay.ToList()
+                TotalSum = passages.Sum(p => p.Fee),
+                PassagesPerDay = passages.GroupBy(p => p.Date.Date)
+                                .ToDictionary(group => group.Key,
+                                    group => group.Select(p => new TollPassagesResponse
+                                    {
+                                        Date = p.Date,
+                                        Fee = p.Fee
+                                    }).ToList())
             };
-
-            return tollPassageBaseResponse;
         }
     }
 }

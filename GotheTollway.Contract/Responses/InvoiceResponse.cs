@@ -6,26 +6,25 @@
         public VehicleResponse Vehicle { get; set; } = new();
         public decimal TotalSum { get; set; }
         public DateTime Generated { get; set; }
+        public TollPassageBaseResponse Passages { get; set; } = new();
+    }
 
-        public TollPassageBaseResponse PassagesPerDay { get; set; } = new();
+    public class TollPassageBaseResponse
+    {
+        public Dictionary<DateTime, List<TollPassagesResponse>> PassagesPerDay { get; set; } = new();
+        public decimal TotalSum { get; set; }
+    }
+ 
+    public class TollPassagesResponse
+    {
+        public DateTimeOffset Date { get; set; }
+        public decimal Fee { get; set; }
     }
 
     public class VehicleResponse
     {
         public string RegistrationNumber { get; set; } = string.Empty;
         public string VehicleType { get; set; } = string.Empty;
-    }
-
-    public class TollPassageBaseResponse
-    {
-        public decimal TotalSum { get; set; }
-        public List<TollPassagesResponse> PassagesPerDay { get; set; } = new();
-    }
-
-    public class TollPassagesResponse
-    {
-        public DateTimeOffset Date { get; set; }
-        public decimal Fee { get; set; }
     }
 
     public class VehicleOwnerResponse
