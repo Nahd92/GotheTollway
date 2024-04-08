@@ -17,6 +17,7 @@ Coming ...
 - Infrastructure Project Addition: Included an Infrastructure project to simulate HTTP requests to an external API for fetching vehicle data.
 
 # Recent Development Timeline
+- Apr 8, 2024: Fixed the failing tests and added ExemptionVehicleTypes entity
 - Apr 5, 2024: Started implementing logic to manage toll passes.
 - Apr 6, 2024: Added Infrastructure project to simulate HTTP requests to an external API for vehicle data retrieval.
 - 3 Days Ago: Created entities, database configuration, and initial migration.
