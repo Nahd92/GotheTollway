@@ -1,8 +1,12 @@
-﻿namespace GotheTollway.Contract.Requests
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GotheTollway.Contract.Requests
 {
     public class ProcessTollRequest
     {
-        public DateTimeOffset Date { get; set; }
+        [Required]
+        public DateTime Date { get; set; }
+        [Required]
         public string RegistrationNumber { get;     set; } = string.Empty;
     }
 }

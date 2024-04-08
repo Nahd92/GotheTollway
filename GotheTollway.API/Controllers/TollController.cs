@@ -11,7 +11,7 @@ namespace GotheTollway.API.Controllers
         private readonly ITollService _tollService = tollService;
 
         [HttpPost]
-        [Route("api/toll/process")]
+        [Route("api/toll/createtollpassage")]
         public async Task<IActionResult> HandleTollPass([FromBody] ProcessTollRequest processTollRequest)
         {
             var validationResult = TollValidations.ValidateRegistrationNumber(processTollRequest);

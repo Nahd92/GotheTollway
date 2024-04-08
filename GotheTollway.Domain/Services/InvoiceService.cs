@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using GotheTollway.Contract.Responses;
+using GotheTollway.Domain.Entities;
 using GotheTollway.Domain.Helpers;
 using GotheTollway.Domain.Interface;
 using Microsoft.Extensions.Logging;
@@ -37,8 +38,29 @@ namespace GotheTollway.Domain.Services
                     LastName = passageInfo.Vehicle.Owner.LastName,
                     ZipCode = passageInfo.Vehicle.Owner.ZipCode,
                     Address = passageInfo.Vehicle.Owner.Address,
-                }
+                },
+                PassagesPerDay = GetPassagesPerDay(passages)
             });
+        }
+
+        private static TollPassageBaseResponse GetPassagesPerDay(List<TollPassage> passages)
+        {
+            var passagesPerDay = passages.GroupBy(p => p.Date.Date)
+                            .SelectMany(group => group.Select(p => new TollPassagesResponse
+                            {
+                                Date = group.Key,
+                                Fee = p.Fee
+                            }).ToList());
+
+            var totalSum = passagesPerDay.Sum(p => p.Fee);
+
+            var tollPassageBaseResponse = new TollPassageBaseResponse
+            {
+                TotalSum = totalSum,
+                PassagesPerDay = passagesPerDay.ToList()
+            };
+
+            return tollPassageBaseResponse;
         }
     }
 }

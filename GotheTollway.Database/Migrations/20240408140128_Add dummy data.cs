@@ -43,8 +43,7 @@ namespace GotheTollway.Database.Migrations
             // This is only for demonstration purposes
             // We should not insert data like this in production.
             migrationBuilder.Sql(@"INSERT INTO ExemptedVehicleTypes(VehicleType)
-            VALUES (0),   
-                   (1),  
+            VALUES   
                    (2),  
                    (3),  
                    (4),  

@@ -5,6 +5,7 @@ using GotheTollway.Domain.Enums;
 using GotheTollway.Domain.Helpers;
 using GotheTollway.Domain.Interface;
 using GotheTollway.Domain.Repositories;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GotheTollway.Domain.Services
 {
@@ -34,9 +35,6 @@ namespace GotheTollway.Domain.Services
                 return new CommandResult(Result.Failure("Vehicle not found"));
             }
 
-            // 2. Get all the passages for the vehicle by registration number
-            var tollPassages = await _tollRepository.GetAllTollPassagesByRegistrationNumber(processTollRequest.RegistrationNumber);
-
             // 3. Get All the toll exemptions   
             var tollFeesExemptions = await _tollExemptionRepository.GetTollExemptions();
 
@@ -48,50 +46,85 @@ namespace GotheTollway.Domain.Services
                 return vehicleExempted;
             }
 
-            // Get the last passage within the last hour
-            var lastPassage = tollPassages
-                    .Where(x => x.Date > DateTime.UtcNow.AddHours(-1))
-                    .OrderBy(x => x.Date) 
-                    .FirstOrDefault();
-
-            // Check if the vehicle has passed the toll within the last hour
-            if (lastPassage != null && processTollRequest.Date <= lastPassage.Date.AddHours(1))
-            {
-                    await _tollRepository.CreateTollPassage(new TollPassage
-                    {
-                        Fee = 0,
-                        Date = processTollRequest.Date,
-                        Vehicle = vehicle,
-                    });
-
-                    return new CommandResult(Result.Success());
-            }
-
             // 6. Get the fee for the toll passage
             await GetAndAppendFeeToTollPassage(processTollRequest, vehicle);
 
             return new CommandResult(Result.Success());
         }
+
         private async Task GetAndAppendFeeToTollPassage(ProcessTollRequest processTollRequest, Vehicle vehicle)
         {
             var allFeeConfigs = await _tollFeeRepository.GetAllTollFeesConfigs();
+            var allPassages = await _tollRepository.GetAllTollPassagesByRegistrationNumber(processTollRequest.RegistrationNumber);
 
-            var fee = allFeeConfigs
-                            .FirstOrDefault(x =>
-                                    x.StartTime <= processTollRequest.Date.TimeOfDay &&
-                                    x.EndTime >= processTollRequest.Date.TimeOfDay);
+            // Extract request date
+            var requestDate = processTollRequest.Date;
+
+            // Find applicable fee configuration
+            var fee = allFeeConfigs.FirstOrDefault(x =>
+                            x.StartTime <= requestDate.TimeOfDay &&
+                            x.EndTime >= requestDate.TimeOfDay);
 
             if (fee == null)
             {
                 throw new Exception("No fee rule found for the time of day");
             }
 
-            await _tollRepository.CreateTollPassage(new TollPassage
+            // Check if there's already a passage for today with total fee 60
+            var todayPassages = allPassages.Where(p => p.Date.Date == requestDate.Date);
+            if (todayPassages.Any() && todayPassages.Sum(p => p.Fee) == 60)
             {
-                Date = processTollRequest.Date,
-                Vehicle = vehicle,
-                Fee = fee.Fee
-            });
+                // If fee sum for today is 60, create a passage with 0 fee
+                await _tollRepository.CreateTollPassage(new TollPassage
+                {
+                    Date = requestDate,
+                    Vehicle = vehicle,
+                    Fee = 0
+                });
+            }
+            else
+            {
+                // Otherwise, create a passage with the calculated fee
+                await _tollRepository.CreateTollPassage(new TollPassage
+                {
+                    Date = requestDate,
+                    Vehicle = vehicle,
+                    Fee = fee.Fee
+                });
+            }
+
+            // Process the most expensive toll within the same hour
+            await ProcessMostExpensiveTollWithinHour(processTollRequest);
+        }
+
+
+        /// <summary>
+        /// This method checks if the vehicle has passed the toll within the last hour
+        /// If it have passed the toll within the last hour, it will take the passage with the highest fee
+        /// And charge the vehicle for that passage only.
+        /// </summary>
+        /// <param name="processTollRequest"></param>
+        private async Task ProcessMostExpensiveTollWithinHour(ProcessTollRequest processTollRequest)
+        {
+            // Get the last passage within the last hour
+            var allPassagesWithinLastHour = await _tollRepository.GetAlltTollPassageWithinLastHour(processTollRequest.RegistrationNumber);
+            var lastPassage = allPassagesWithinLastHour.OrderBy(x => x.Date).FirstOrDefault();
+
+            // Check if the vehicle has passed the toll within the last hour
+            if (lastPassage != null && processTollRequest.Date <= lastPassage.Date.AddHours(1))
+            {
+                // we need to take the passage with the highest fee and charge the vehicle
+                var passageWithHighestFee = allPassagesWithinLastHour.OrderByDescending(p => p.Fee).FirstOrDefault();
+
+                foreach (var passage in allPassagesWithinLastHour)
+                {
+                    if (passage != passageWithHighestFee)
+                    {
+                        passage.Fee = 0;
+                        await _tollRepository.UpdateTollPassage(passage);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -142,26 +175,6 @@ namespace GotheTollway.Domain.Services
                     }
                 }
 
-                /// Check if the time falls within exemption time range
-                if (exemptions.Any(e => e.ExemptionStartTime.HasValue && e.ExemptionEndTime.HasValue))
-                {
-                    foreach (var exemption in exemptions)
-                    {
-                        var timeOfDay = processTollRequest.Date.TimeOfDay;
-                        if (timeOfDay >= exemption.ExemptionStartTime && timeOfDay < exemption.ExemptionEndTime)
-                        {
-                            await _tollRepository.CreateTollPassage(new TollPassage
-                            {
-                                Date = processTollRequest.Date,
-                                Vehicle = vehicle,
-                                Fee = 0
-                            });
-
-                            return new CommandResult(Result.Success());
-                        }
-                    }
-                }
-
                 // Check if the vehicle is exempted from toll fee based on the day of the week
                 if (exemptions != null && exemptions.Any(x => x.ExemptedDayOfWeek == processTollRequest.Date.DayOfWeek))
                 {
@@ -177,6 +190,26 @@ namespace GotheTollway.Domain.Services
                         });
 
                         return new CommandResult(Result.Success());
+                    }
+                }
+
+                /// Check if the time falls within exemption time range
+                if (exemptions.Any(e => e.ExemptionStartTime.HasValue && e.ExemptionEndTime.HasValue))
+                {
+                    foreach (var exemption in exemptions)
+                    {
+                        var timeOfDay = processTollRequest.Date.TimeOfDay;
+                        if ((processTollRequest.Date.DayOfWeek == exemption.ExemptedDayOfWeek) && timeOfDay >= exemption.ExemptionStartTime && timeOfDay < exemption.ExemptionEndTime)
+                        {
+                            await _tollRepository.CreateTollPassage(new TollPassage
+                            {
+                                Date = processTollRequest.Date,
+                                Vehicle = vehicle,
+                                Fee = 0
+                            });
+
+                            return new CommandResult(Result.Success());
+                        }
                     }
                 }
             }

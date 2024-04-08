@@ -1,6 +1,7 @@
 ﻿using GotheTollway.Domain.Enums;
 using GotheTollway.Domain.Interface;
 using GotheTollway.Domain.Models.VehicleAPI;
+using GotheTollway.Infrastructure.MoqData;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
@@ -21,7 +22,7 @@ namespace GotheTollway.Infrastructure.Services
         {
             try
             {
-                var response = await MoqHttpClient().GetAsync($"vehicledata/{registrationNumber}");
+                var response = await HttpClientMock.HttpClient(registrationNumber).GetAsync($"vehicledata/{registrationNumber}");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -37,38 +38,5 @@ namespace GotheTollway.Infrastructure.Services
                 return new VehicleResponse();
             }
         }
-
-        private static HttpClient MoqHttpClient()
-        {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-            mockHttpMessageHandler
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                   .ReturnsAsync(
-                    new HttpResponseMessage
-                    {
-                        StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(JsonSerializer.Serialize(new VehicleResponse
-                        {
-                            RegistrationNumber = "ABC123",
-                            VehicleOwnerResponse = new VehicleOwnerResponse
-                            {
-                                FirstName = "John",
-                                LastName = "Doe",
-                                Address = "1234 Main St, Springfield, IL"
-                            },
-                            VehicleType = VehicleType.Car
-                        }))
-                    });
-
-            return new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = new Uri("https://www.transportstyrelsen.com/"),
-            };
-        }
-
     }
 }

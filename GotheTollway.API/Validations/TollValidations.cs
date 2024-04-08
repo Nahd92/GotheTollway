@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using GotheTollway.Contract.Requests;
 using GotheTollway.Domain.Helpers;
+using System.Text.RegularExpressions;
 
 namespace GotheTollway.API.Validations
 {
@@ -17,6 +18,13 @@ namespace GotheTollway.API.Validations
             {
                 return new CommandResult(Result.Failure("Registration number cannot be null or empty."));
             }
+
+            if (!Regex.IsMatch(processTollRequest.RegistrationNumber.ToUpper(), "^[A-Z]{3}[0-9]{2}[A-Z0-9]{1}$"))
+            {
+                return new CommandResult(Result.Failure("Registration number must be in the format ABC123."));
+            }
+
+
 
             if (processTollRequest.Date < DateTime.UtcNow)
             {

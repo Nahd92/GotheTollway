@@ -16,6 +16,15 @@ namespace GotheTollway.Database.Repositories
                                                     .ToListAsync();
         }
 
+        public async Task<List<TollPassage>> GetAlltTollPassageWithinLastHour(string registrationNumber)
+        {
+           return await _context.TollPassages
+                        .Where(x => x.Date > DateTime.UtcNow.AddHours(-1))
+                            .Where(x => x.Vehicle.RegistrationNumber == registrationNumber)
+                                .OrderBy(x => x.Date)
+                                    .ToListAsync();
+        }
+
         public async Task<TollPassage?> GetTollPassageByRegistrationNumber(string registrationNumber)
         {
             return await _context
@@ -28,6 +37,13 @@ namespace GotheTollway.Database.Repositories
             var createdTollPassage = _context.TollPassages.Add(tollPassage).Entity;
             await _context.SaveChangesAsync();
             return createdTollPassage;
+        }
+
+        public async Task<TollPassage> UpdateTollPassage(TollPassage tollPassage)
+        {
+            var tollPassageToUpdate = _context.TollPassages.Update(tollPassage).Entity;
+            await _context.SaveChangesAsync();
+            return tollPassageToUpdate;
         }
     }
 }

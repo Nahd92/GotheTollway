@@ -8,8 +8,8 @@ namespace GotheTollway.API.Controllers
         private readonly IInvoiceService _invoiceService = invoiceService;
 
         [HttpPost]
-        [Route("api/sendInvoice")]
-        public async Task<IActionResult> CreateInvoice([FromBody] string registrationNumber)
+        [Route("api/invoice/createInvoice")]
+        public async Task<IActionResult> CreateInvoice([FromQuery] string registrationNumber)
         {
             if(string.IsNullOrEmpty(registrationNumber)) 
             {

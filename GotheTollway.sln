@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GotheTollway.Domain.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotheTollway.Infrastructure", "GotheTollway.Infrastructure\GotheTollway.Infrastructure.csproj", "{8A8092FF-DEF7-4F45-9140-35C7718E4E6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotheTollway.Infrastructure.Tests", "GotheTollway.Infrastructure.Tests\GotheTollway.Infrastructure.Tests.csproj", "{560A0AE4-BBF7-49CF-A7F1-A8C6EC536844}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{8A8092FF-DEF7-4F45-9140-35C7718E4E6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A8092FF-DEF7-4F45-9140-35C7718E4E6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A8092FF-DEF7-4F45-9140-35C7718E4E6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{560A0AE4-BBF7-49CF-A7F1-A8C6EC536844}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560A0AE4-BBF7-49CF-A7F1-A8C6EC536844}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560A0AE4-BBF7-49CF-A7F1-A8C6EC536844}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560A0AE4-BBF7-49CF-A7F1-A8C6EC536844}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{F60212EA-B963-4059-BA5B-05F7B74B2E8D} = {FA709ED1-EA13-45D5-886E-C565B62D208C}
 		{C8D4BC0A-3D2D-4D0C-AF8B-DA1083B84060} = {384F4D0E-E247-4CB7-944B-F5EA31E09424}
 		{8A8092FF-DEF7-4F45-9140-35C7718E4E6C} = {FA709ED1-EA13-45D5-886E-C565B62D208C}
+		{560A0AE4-BBF7-49CF-A7F1-A8C6EC536844} = {384F4D0E-E247-4CB7-944B-F5EA31E09424}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3D7CE7F2-A92E-4F97-A3FF-CB67369ECF76}
