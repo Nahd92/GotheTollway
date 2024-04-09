@@ -151,6 +151,54 @@ namespace GotheTollway.Domain.Tests.Services
         }
 
         [Fact]
+        public async Task ProcessMostExpensiveTollWithinHour_WhenNoPassagesWithinLastHourExists_ShouldNotChangePassageFees()
+        {
+            // Arrange
+            var processTollRequest = new ProcessTollRequest
+            {
+                RegistrationNumber = "ABC123",
+                Date = DateTime.Now
+            };
+            SetupDefaultMock();
+            var passagesWithinLastHour = new List<TollPassage>();
+            _tollPassageRepository.Setup(repo => repo.GetAlltTollPassageWithinLastHour(It.IsAny<string>())).ReturnsAsync(passagesWithinLastHour);
+
+
+            // Act
+            var result = await _tollService.ProcessToll(request);
+
+            // Assert
+            _tollPassageRepository.Verify(x => x.UpdateTollPassage(It.IsAny<TollPassage>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ProcessMostExpensiveTollWithinHour_WhenPassagesWithinLastHourExists_ShouldChargeVehicleForPassageWithHighestFee()
+        {
+            // Arrange
+            var processTollRequest = new ProcessTollRequest
+            {
+                RegistrationNumber = "ABC123",
+                Date = DateTime.Now
+            };
+            SetupDefaultMock();
+            var passagesWithinLastHour = new List<TollPassage>
+            {
+                new TollPassage { Date = DateTime.Now.AddMinutes(-30), Fee = 30 },
+                new TollPassage { Date = DateTime.Now.AddMinutes(-45), Fee = 45 },
+                new TollPassage { Date = DateTime.Now.AddMinutes(-15), Fee = 15 }
+            };
+            _tollPassageRepository.Setup(repo => repo.GetAlltTollPassageWithinLastHour(It.IsAny<string>())).ReturnsAsync(passagesWithinLastHour);
+
+
+            // Act
+            var result = await _tollService.ProcessToll(request);
+
+            // Assert
+            _tollPassageRepository.Verify(x => x.UpdateTollPassage(It.IsAny<TollPassage>()), Times.Exactly(2));
+            passagesWithinLastHour.Count(x => x.Fee == 0).Should().Be(2);
+            passagesWithinLastHour.Count(x => x.Fee == 45).Should().Be(1);
+        }
+        [Fact]
         public async Task ProcessToll_ExemptionTimeRange_CorrectFeeCharged()
         {
             // Arrange
