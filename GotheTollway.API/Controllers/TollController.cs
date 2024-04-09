@@ -1,6 +1,5 @@
 ﻿using GotheTollway.API.Validations;
 using GotheTollway.Contract.Requests;
-using GotheTollway.Contract.Responses;
 using GotheTollway.Domain.Interface;
 using Microsoft.AspNetCore.Mvc;
 

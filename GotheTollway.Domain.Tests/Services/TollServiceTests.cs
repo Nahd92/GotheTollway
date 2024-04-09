@@ -58,6 +58,9 @@ namespace GotheTollway.Domain.Tests.Services
                         .ReturnsAsync(new List<TollPassage>());
 
 
+            _tollPassageRepository.Setup(x => x.GetAlltTollPassageWithinLastHour(It.IsAny<string>()))
+                .ReturnsAsync(new List<TollPassage>());
+
             _vehicleAPIService.Setup(x => x.GetVehicleData(request.RegistrationNumber))
                 .ReturnsAsync(new VehicleResponse
                 {
@@ -84,6 +87,7 @@ namespace GotheTollway.Domain.Tests.Services
 
             _exemptionVehicleTypesRepo.Setup(x => x.GetAllExemptedVehicleTypesAsync())
                 .ReturnsAsync([]);
+
         }
 
         [Fact]
