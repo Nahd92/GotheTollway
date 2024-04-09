@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Castle.Core.Logging;
+using FluentAssertions;
 using GotheTollway.Contract.Requests;
 using GotheTollway.Domain.Entities;
 using GotheTollway.Domain.Enums;
@@ -6,6 +7,7 @@ using GotheTollway.Domain.Interface;
 using GotheTollway.Domain.Models.VehicleAPI;
 using GotheTollway.Domain.Repositories;
 using GotheTollway.Domain.Services;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace GotheTollway.Domain.Tests.Services
@@ -18,6 +20,7 @@ namespace GotheTollway.Domain.Tests.Services
         private readonly Mock<ITollExemptionRepository> _tollExemptionRepository;
         private readonly Mock<ITollFeeRepository> _tollFeeRepository;
         private readonly Mock<IExemptionVehicleTypeRepository> _exemptionVehicleTypesRepo;
+        private readonly Mock<ILogger<TollService>> _loggerMock;
 
         private readonly TollService _tollService;
 
@@ -29,6 +32,7 @@ namespace GotheTollway.Domain.Tests.Services
             _tollExemptionRepository = new Mock<ITollExemptionRepository>();
             _tollFeeRepository = new Mock<ITollFeeRepository>();
             _exemptionVehicleTypesRepo = new Mock<IExemptionVehicleTypeRepository>();
+            _loggerMock = new Mock<ILogger<TollService>>();
 
             _tollService = new TollService(
                 _tollPassageRepository.Object,
@@ -36,7 +40,8 @@ namespace GotheTollway.Domain.Tests.Services
                 _vehicleRepository.Object,
                 _tollExemptionRepository.Object,
                 _tollFeeRepository.Object,
-                _exemptionVehicleTypesRepo.Object);
+                _exemptionVehicleTypesRepo.Object,
+                _loggerMock.Object);
         }
 
         private readonly ProcessTollRequest request = new()
