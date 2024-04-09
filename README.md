@@ -23,19 +23,34 @@ Structure
 
 I have also tried to cover as much code with tests as possible. (There are some tests left to do).
 
-# What's left to do:
-- Write more tests.
-- Finalize the logic so that it fulfills all the requirements. (A few things left).
-- Prepare for tomorrow's demonstration.
+
+# Good to know 
+
+If you want to try this, all you need to do is run 'update-database -Context GotheTollwayContext'. You can use whatever type of Swedish registration number that's valid to test. 
+Using the 'CreateInvoice' function will give you the data for each vehicle.
+
+# What I wished have done differently: 
+
+Can explain during the meeting and presentation.
 
 --------------------------------------------
 
 # Recent Updates
+- Finalized all the needed logic to pass all the requirments. Added the loggings in the service and added more unittests.
+
 - Fixed Logic for Retrieving Last Passage: Corrected the logic to retrieve the last passage within the last hour.
+  
 - Added Tests for TollService: Created tests to verify the functionality of TollService.
+
 - Infrastructure Project Addition: Included an Infrastructure project to simulate HTTP requests to an external API for fetching vehicle data.
 
 # Recent Development Timeline
+- Apr 8, 2024: Created two test to check the logic in ProcessMostExpensiveTollWithinHour
+- Apr 8, 2024: Added Loggins in TollService
+- Apr 8, 2024: Created Unitests for TollController,
+- Apr 8, 2024: Fixed so that we now present all the passages grouped by its day.
+- Apr 8, 2024: Fixed the last needed changes for the logic.
+- Apr 8, 2024: Updated the Read.Me
 - Apr 8, 2024: Fixed the failing tests and added ExemptionVehicleTypes entity
 - Apr 5, 2024: Started implementing logic to manage toll passes.
 - Apr 6, 2024: Added Infrastructure project to simulate HTTP requests to an external API for vehicle data retrieval.
