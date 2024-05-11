@@ -1,5 +1,6 @@
 # GotheTollway
-This repository contains the codebase for Norion Bank codetest.
+This repository contains the codebase for 
+codetest.
 
 # Requirements 
 
